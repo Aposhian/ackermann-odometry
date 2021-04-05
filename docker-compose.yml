@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  ackermann_odometry:
+    build: ./
+    command: ros2 run ackermann_odometry odom_publisher --ros-args -r odom:=odom_estimated -p axle_length:=1 -p wheelbase_length:=2 -p wheel_radius:=0.1
+  ackermann_controller:
+    build: ./
+    command: ros2 run ackermann_controller ackermann_teleop_joy
+  joy:
+    build:
+      context: ./
+      dockerfile: ./docker/joy.Dockerfile
+    privileged: true
+    devices:
+      - /dev/input/js0
+  plot:
+    build:
+      context: ./
+      dockerfile: ./docker/plot.Dockerfile
+    devices:
+      - /dev/dri
+    environment:
+      - DISPLAY=${DISPLAY}
+      - TERM=${TERM}
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/tmp/.docker.xauth
+    volumes:
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /etc/localtime:/etc/localtime:ro
+  bag:
+    build:
+      context: ./
+      dockerfile: ./docker/bag.Dockerfile
+    command: bash -c 'cd /bags && ros2 bag record --all'
+    volumes:
+      - ./bags:/bags
