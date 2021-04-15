@@ -1,0 +1,82 @@
+<root version="2.3.8">
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab containers="1" tab_name="tab1">
+   <Container>
+    <DockSplitter sizes="1" count="1" orientation="-">
+     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+      <DockSplitter sizes="0.332943;0.334115;0.332943" count="3" orientation="-">
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries">
+         <range right="12.493530" top="104.238225" left="7.503732" bottom="-94.208321"/>
+         <limitY/>
+         <curve color="#f14cc1" name="/odom/pose/orientation/yaw_deg"/>
+         <curve color="#9467bd" name="/odom_estimated/pose/orientation/yaw_deg"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries">
+         <range right="12.493530" top="16.750311" left="7.503732" bottom="0.090554"/>
+         <limitY/>
+         <curve color="#17becf" name="/odom/pose/position/x"/>
+         <curve color="#bcbd22" name="/odom_estimated/pose/position/x"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" mode="TimeSeries">
+         <range right="12.493530" top="10.463895" left="7.503732" bottom="8.745619"/>
+         <limitY/>
+         <curve color="#1f77b4" name="/odom_estimated/pose/position/y"/>
+         <curve color="#d62728" name="/odom/pose/position/y"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockArea name="...">
+       <plot style="Lines" mode="XYPlot">
+        <range right="16.750311" top="17.869132" left="0.090554" bottom="1.340382"/>
+        <limitY/>
+        <curve color="#1ac938" name="estimated" curve_y="/odom_estimated/pose/position/y" curve_x="/odom_estimated/pose/position/x"/>
+        <curve color="#ff7f0e" name="actual" curve_y="/odom/pose/position/y" curve_x="/odom/pose/position/x"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="0"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad ROS2 bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="MQTT Subscriber"/>
+  <plugin ID="ROS2 Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="true"/>
+   <selected_topics>
+    <topic name="/odom"/>
+    <topic name="/odom_estimated"/>
+   </selected_topics>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="ROS2 Topic Re-Publisher" status="idle"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS2 Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>

@@ -34,7 +34,8 @@ class OdomPublisher(Node):
                 ('axle_length', None),
                 ('wheelbase_length', None),
                 ('wheel_radius', None),
-                ('center_of_mass_offset', 0.0)
+                ('center_of_mass_offset', 0.0),
+                ('damping_factor', 0.1)
             ]
         )
         try:
@@ -42,6 +43,7 @@ class OdomPublisher(Node):
             self.wheelbase_length = float(self.get_parameter('wheelbase_length').value)
             self.wheel_radius = float(self.get_parameter('wheel_radius').value)
             self.center_of_mass_offset = float(self.get_parameter('center_of_mass_offset').value)
+            self.damping_factor = float(self.get_parameter('damping_factor').value)
         except TypeError as e:
             raise RuntimeError('Not all parameters are set properly') from e
 
@@ -86,7 +88,7 @@ class OdomPublisher(Node):
             position_delta = state.position + time_delta * self.linear_velocity(state.orientation, linear_speed)
 
         return AckermannState(
-            position=state.position + position_delta,
+            position=state.position + self.damping_factor * position_delta,
             orientation=state.orientation * orientation_delta,
             left_wheel_speed=feedback.left_wheel_speed,
             right_wheel_speed=feedback.right_wheel_speed,

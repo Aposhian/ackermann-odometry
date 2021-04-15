@@ -1,6 +1,6 @@
 ARG WORKSPACE=/opt/ackermann_ws
 
-FROM ros:foxy AS builder
+FROM ros:foxy
 ARG WORKSPACE
 WORKDIR ${WORKSPACE}
 RUN apt-get update
