@@ -1,41 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <root version="2.3.8">
  <tabbed_widget parent="main_window" name="Main Window">
-  <Tab containers="1" tab_name="tab1">
+  <Tab tab_name="tab1" containers="1">
    <Container>
-    <DockSplitter sizes="1" count="1" orientation="-">
-     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
-      <DockSplitter sizes="0.332943;0.334115;0.332943" count="3" orientation="-">
-       <DockArea name="...">
+    <DockSplitter orientation="-" sizes="1" count="1">
+     <DockSplitter orientation="|" sizes="0.493276;0.506724" count="2">
+      <DockSplitter orientation="-" sizes="0.199765;0.199765;0.20094;0.199765;0.199765" count="5">
+       <DockArea name="Heading">
         <plot style="Lines" mode="TimeSeries">
-         <range right="12.493530" top="104.238225" left="7.503732" bottom="-94.208321"/>
+         <range left="151.224909" bottom="-43.075542" right="156.215254" top="6.259687"/>
          <limitY/>
          <curve color="#f14cc1" name="/odom/pose/orientation/yaw_deg"/>
          <curve color="#9467bd" name="/odom_estimated/pose/orientation/yaw_deg"/>
         </plot>
        </DockArea>
-       <DockArea name="...">
+       <DockArea name="X">
         <plot style="Lines" mode="TimeSeries">
-         <range right="12.493530" top="16.750311" left="7.503732" bottom="0.090554"/>
+         <range left="151.224909" bottom="-2.749812" right="156.215254" top="0.032850"/>
          <limitY/>
          <curve color="#17becf" name="/odom/pose/position/x"/>
          <curve color="#bcbd22" name="/odom_estimated/pose/position/x"/>
         </plot>
        </DockArea>
-       <DockArea name="...">
+       <DockArea name="Y">
         <plot style="Lines" mode="TimeSeries">
-         <range right="12.493530" top="10.463895" left="7.503732" bottom="8.745619"/>
+         <range left="151.224909" bottom="-0.088050" right="156.215254" top="0.147842"/>
          <limitY/>
          <curve color="#1f77b4" name="/odom_estimated/pose/position/y"/>
          <curve color="#d62728" name="/odom/pose/position/y"/>
         </plot>
        </DockArea>
+       <DockArea name="Steering Angle">
+        <plot style="Lines" mode="TimeSeries">
+         <range left="151.242099" bottom="-0.000024" right="156.220833" top="0.000965"/>
+         <limitY/>
+         <curve color="#1ac938" name="/feedback/steering_angle"/>
+         <curve color="#ff7f0e" name="/ackermann_cmd/drive/steering_angle"/>
+        </plot>
+       </DockArea>
+       <DockArea name="Speed">
+        <plot style="Lines" mode="TimeSeries">
+         <range left="151.242099" bottom="-0.000347" right="156.220833" top="0.014226"/>
+         <limitY/>
+         <curve color="#f14cc1" name="/ackermann_cmd/drive/speed"/>
+         <curve color="#9467bd" name="/feedback/left_wheel_speed"/>
+         <curve color="#17becf" name="/feedback/right_wheel_speed"/>
+        </plot>
+       </DockArea>
       </DockSplitter>
-      <DockArea name="...">
+      <DockArea name="Position">
        <plot style="Lines" mode="XYPlot">
-        <range right="16.750311" top="17.869132" left="0.090554" bottom="1.340382"/>
+        <range left="-2.749832" bottom="-1.350527" right="0.036511" top="1.406678"/>
         <limitY/>
-        <curve color="#1ac938" name="estimated" curve_y="/odom_estimated/pose/position/y" curve_x="/odom_estimated/pose/position/x"/>
-        <curve color="#ff7f0e" name="actual" curve_y="/odom/pose/position/y" curve_x="/odom/pose/position/x"/>
+        <curve curve_y="/odom_estimated/pose/position/y" color="#1ac938" curve_x="/odom_estimated/pose/position/x" name="estimated"/>
+        <curve curve_y="/odom/pose/position/y" color="#ff7f0e" curve_x="/odom/pose/position/x" name="actual"/>
        </plot>
       </DockArea>
      </DockSplitter>
@@ -65,6 +83,8 @@
    <selected_topics>
     <topic name="/odom"/>
     <topic name="/odom_estimated"/>
+    <topic name="/ackermann_cmd"/>
+    <topic name="/feedback"/>
    </selected_topics>
   </plugin>
   <plugin ID="UDP Server"/>

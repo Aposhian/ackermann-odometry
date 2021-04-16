@@ -1,7 +1,5 @@
-ARG WORKSPACE=/opt/ackermann_ws
-
 FROM ros:foxy
-ARG WORKSPACE
+ARG WORKSPACE=/opt/ackermann_ws
 WORKDIR ${WORKSPACE}
 RUN apt-get update
 COPY src src

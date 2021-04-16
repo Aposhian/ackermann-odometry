@@ -1,9 +1,10 @@
+import math
 from typing import NamedTuple
 
+import builtin_interfaces.msg
 import numpy as np
 import rclpy
 from ackermann_interfaces.msg import AckermannFeedback
-import builtin_interfaces.msg
 from geometry_msgs.msg import (Point, Pose, PoseWithCovariance, Quaternion,
                                Twist, TwistWithCovariance, Vector3)
 from nav_msgs.msg import Odometry
@@ -35,7 +36,7 @@ class OdomPublisher(Node):
                 ('wheelbase_length', None),
                 ('wheel_radius', None),
                 ('center_of_mass_offset', 0.0),
-                ('damping_factor', 0.1)
+                ('damping_factor', 0.01)
             ]
         )
         try:
@@ -80,12 +81,12 @@ class OdomPublisher(Node):
 
         heading_delta = angular_speed * time_delta
         orientation_delta = Rotation.from_euler('xyz', [0, 0, heading_delta])
-        if np.isfinite(turn_radius):
-            x_delta = turn_radius * (1 - np.cos(heading_delta))
-            y_delta = turn_radius * np.sin(heading_delta)
+        if math.isfinite(turn_radius):
+            x_delta = turn_radius * (1 - math.cos(heading_delta))
+            y_delta = turn_radius * math.sin(heading_delta)
             position_delta = np.array([x_delta, y_delta, 0])
         else:
-            position_delta = state.position + time_delta * self.linear_velocity(state.orientation, linear_speed)
+            position_delta = time_delta * self.linear_velocity(state.orientation, linear_speed)
 
         return AckermannState(
             position=state.position + self.damping_factor * position_delta,
@@ -153,14 +154,14 @@ class OdomPublisher(Node):
         For left turns, the radius is positive. For right turns, the radius is negative.
         """
         # If the steering angle is 0, then cot(0) is undefined
-        if np.isclose(0, steering_angle):
-            return np.inf
+        if math.isclose(0, steering_angle, abs_tol=0.01):
+            return math.inf
         else:
-            return np.sign(steering_angle) \
-                * np.sqrt(self.center_of_mass_offset**2 + self.wheelbase_length**2 * 1 / np.tan(steering_angle)**2)
+            radius = math.sqrt(self.center_of_mass_offset**2 + self.wheelbase_length**2 * 1 / math.tan(steering_angle)**2)
+            return math.copysign(radius, steering_angle)
 
     def linear_velocity(self, orientation: Rotation, speed: float) -> np.array:
-        return orientation.apply([0, speed, 0]) # rotate from +y direction
+        return orientation.apply([speed, 0, 0]) # rotate from +x direction
 
 def main(args=None):
     rclpy.init(args=args)
