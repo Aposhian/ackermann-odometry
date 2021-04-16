@@ -36,7 +36,7 @@ class OdomPublisher(Node):
                 ('wheelbase_length', None),
                 ('wheel_radius', None),
                 ('center_of_mass_offset', 0.0),
-                ('damping_factor', 0.01)
+                ('damping_factor', 1)
             ]
         )
         try:
@@ -74,26 +74,28 @@ class OdomPublisher(Node):
         average_wheel_speed = (state.left_wheel_speed + state.right_wheel_speed) / 2
         linear_speed = average_wheel_speed * self.wheel_radius
         turn_radius = self.turn_radius(state.steering_angle)
-        angular_speed = linear_speed / turn_radius
+        angular_speed = linear_speed / turn_radius # This is zero if turn_radius is infinite
 
         feedback_time = rclpy.time.Time.from_msg(feedback.header.stamp)
         time_delta = (feedback_time - state.time).nanoseconds * 1e-9
 
-        heading_delta = angular_speed * time_delta
+        heading_delta = angular_speed * time_delta # This is zero if angular_speed is zero
+
         orientation_delta = Rotation.from_euler('xyz', [0, 0, heading_delta])
         if math.isfinite(turn_radius):
-            x_delta = turn_radius * (1 - math.cos(heading_delta))
-            y_delta = turn_radius * math.sin(heading_delta)
-            position_delta = np.array([x_delta, y_delta, 0])
+            lateral_delta = turn_radius * (1 - math.cos(heading_delta))
+            forward_delta = turn_radius * math.sin(heading_delta)
+            relative_delta = np.array([forward_delta, lateral_delta, 0])
+            position_delta = state.orientation.apply(relative_delta)
         else:
             position_delta = time_delta * self.linear_velocity(state.orientation, linear_speed)
 
         return AckermannState(
             position=state.position + self.damping_factor * position_delta,
-            orientation=state.orientation * orientation_delta,
+            orientation=orientation_delta * state.orientation,
             left_wheel_speed=feedback.left_wheel_speed,
             right_wheel_speed=feedback.right_wheel_speed,
-            steering_angle=feedback.left_wheel_speed,
+            steering_angle=feedback.steering_angle,
             time=feedback_time
         )
 
@@ -154,7 +156,7 @@ class OdomPublisher(Node):
         For left turns, the radius is positive. For right turns, the radius is negative.
         """
         # If the steering angle is 0, then cot(0) is undefined
-        if math.isclose(0, steering_angle, abs_tol=0.01):
+        if steering_angle == 0:
             return math.inf
         else:
             radius = math.sqrt(self.center_of_mass_offset**2 + self.wheelbase_length**2 * 1 / math.tan(steering_angle)**2)
