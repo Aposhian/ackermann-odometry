@@ -1,3 +1,3 @@
 [submodule "private"]
 	path = private
-	url = ssh://git@github.com:Aposhian/ackermann-odometry-private
+	url = git@github.com:Aposhian/ackermann-odometry-private.git
